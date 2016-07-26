@@ -1,4 +1,13 @@
 #!/bin/csh
+#
+# Convert movie files to format that can be read on my old 3rd Gen iPod Nano
+#
+#
+# TO DO:
+#	Detect resolution and aspect ratio of video automatically
+#	Detect video type automatically
+#	Add course name automatically - shorten somehow
+#
 
 set courseName = iOS
 set doLetterbox = 1
@@ -12,7 +21,7 @@ foreach f (*.mov *.m4v *.mp4)
 	#if ("$f" == "_NOTES*" || "$f" == "conv.csh" || "$f" =~ "*IPOD*" || "$f" == "tmp" || "$f" =~ "meta*") continue
 	if ("$f" =~ "*IPOD*") continue
 
-	# get metadata from file - alter title to include "Poker: " at start
+	# get metadata from file - alter title to include course name at start
 	ffmpeg -hide_banner -v error -i "$f" -f ffmetadata -y meta.txt
 	sed "s/^title=/title=${courseName}: /" meta.txt > meta2.txt
 
