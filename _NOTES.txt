@@ -1,0 +1,49 @@
+
+Notes on loading movies to iPod Nano
+Jul 26 2016
+
+iPod Nano is 3rd Gen
+
+Movies must be 360x240 (1.333/4:3), I think can be MPEG4 or H264, AAC audio
+
+Convert a 480x270 (1.777/16:9) movie for Nano, with letterboxing:
+ffmpeg -i Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -filter:v "scale=320:180, pad=320:240:0:30" -acodec copy ./Lecture\ 3_\ Basic\ Strategy\ IPOD.mp4
+
+iTunes looks at metadata for iTunesU course and won't allow files to be transferred, even if converted
+
+Need to move/copy movie files for course, convert with ffmpeg, then add to ipod into movies area
+Don't have to move/copy - can work in iTunes area but iTunes does a lot of automated management in there
+Can delete files from iTunes course area, and even entire course when done
+
+Can rename move (eg to keep course lectures together) in iTunes after movie is copied onto Nano with Get Info
+Probably could also do by altering meta-data in file
+Seems to get name from meta-data, not filename
+
+can get metadata from file with (barfs a bunch of stuff out on stderr too):
+set md = `ffmpeg -i Lecture\ 2_\ Analytical\ Techniques.mp4 -f ffmetadata -`
+
+can get info on file with
+ffmpeg -i <file>
+
+A few iTunesU course movies are old enough (ca. 2008) that they can be put directly onto Nano with iTunes
+MIT - Photography as Sensing Place, most other MIT won't work
+Stanford - old Engineering and Math courses
+Not Yale - all the old courses I viewed look like they've been reprocessed and won't work any more
+
+see conv.csh for script to do conversions
+
+Other conversion commands:
+
+Rescale (causes distortion going from 16:9 to 4:3):
+ffmpeg -i Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -s 320x240 -aspect 4:3 -acodec copy ./Lecture\ 3_\ Basic\ Strategy\ IPOD.mp4
+
+Resamples audio, sets frame rate to 15 - none of this is needed:
+ffmpeg -i /Users/clay_budin/work/Personal/iTunes/Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -acodec libvo_aacenc -ar 22050 -s 320x240 -aspect 4:3 -r 15 ./Lecture\ 3_\ Basic\ Strategy.mp4
+
+
+
+
+
+
+
+
