@@ -1,3 +1,11 @@
 
 .DS_Store
 
+meta.txt
+meta2.txt
+
+*.mov
+*.m4v
+*.mp4
+
+

@@ -1,25 +1,24 @@
-#
+#!/bin/csh
 
-set courseName = D4M
-set doLetterbox = 0
+set courseName = iOS
+set doLetterbox = 1
 set videoType = h264
 
 set sleepSecs = 5
 
-foreach f (*)
+#foreach f (*)
+foreach f (*.mov *.m4v *.mp4)
 	#if ("$f" !~ "L*") continue
-	if ("$f" =~ "NOTES*" || "$f" == "conv.csh" || "$f" =~ "*IPOD*" || "$f" == "tmp" || "$f" =~ "meta*") continue
+	#if ("$f" == "_NOTES*" || "$f" == "conv.csh" || "$f" =~ "*IPOD*" || "$f" == "tmp" || "$f" =~ "meta*") continue
+	if ("$f" =~ "*IPOD*") continue
 
 	# get metadata from file - alter title to include "Poker: " at start
 	ffmpeg -hide_banner -v error -i "$f" -f ffmetadata -y meta.txt
 	sed "s/^title=/title=${courseName}: /" meta.txt > meta2.txt
 
-	set outName = "${courseName}: ${f:r} IPOD.${f:e}
+	#set outName = "${courseName} ${f:r} IPOD.${f:e}"
+	set outName = "${f:r} IPOD.${f:e}"
 	echo ""; echo "Processing: $outName"
-
-	# assumes incoming movie is 16:9 - scales and letterboxes in center
-	#ffmpeg -i "$f" -vcodec mpeg4 -filter:v "scale=320:180, pad=320:240:0:30" -acodec copy "${f:r} IPOD.${f:e}"
-	#
 
 	# most movie files have still image for title, which is listed as a video stream
 	# by default fmpeg chooses the "best" video stream - highest res - so still image is getting selected
@@ -32,8 +31,10 @@ foreach f (*)
 		# use of -map strips out subtitles and still image(s)
 
 		if ($doLetterbox) then
+			# assumes incoming movie is 16:9 - scales and letterboxes in center
 			ffmpeg -hide_banner -v warning -i "$f" -i meta2.txt -map_metadata 1 -map 0:$vs -map 0:a -codec copy -sn -codec:v mpeg4 -filter:v "scale=320:180, pad=320:240:0:30" -y "$outName"
 		else
+			# incoming movie is 4:3 - just scaled to 320x240
 			ffmpeg -hide_banner -v warning -i "$f" -i meta2.txt -map_metadata 1 -map 0:$vs -map 0:a -codec copy -sn -codec:v mpeg4 -filter:v "scale=320:240" -y "$outName"
 		endif
 
