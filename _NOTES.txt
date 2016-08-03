@@ -6,6 +6,13 @@ iPod Nano is 3rd Gen
 
 Movies must be 360x240 (1.333/4:3), I think can be MPEG4 or H264, AAC audio
 
+iTunesU stuff downloaded to:
+~/Music/iTunes/iTunes\ Media/iTunes\ U
+
+Move files to:
+~/work/Personal/iTunes
+since iTunes manages it's area and tries to undo changes that I might make
+
 Convert a 480x270 (1.777/16:9) movie for Nano, with letterboxing:
 ffmpeg -i Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -filter:v "scale=320:180, pad=320:240:0:30" -acodec copy ./Lecture\ 3_\ Basic\ Strategy\ IPOD.mp4
 
@@ -38,7 +45,7 @@ Rescale (causes distortion going from 16:9 to 4:3):
 ffmpeg -i Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -s 320x240 -aspect 4:3 -acodec copy ./Lecture\ 3_\ Basic\ Strategy\ IPOD.mp4
 
 Resamples audio, sets frame rate to 15 - none of this is needed:
-ffmpeg -i /Users/clay_budin/work/Personal/iTunes/Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -acodec libvo_aacenc -ar 22050 -s 320x240 -aspect 4:3 -r 15 ./Lecture\ 3_\ Basic\ Strategy.mp4
+ffmpeg -i ~/work/Personal/iTunes/Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 -acodec libvo_aacenc -ar 22050 -s 320x240 -aspect 4:3 -r 15 ./Lecture\ 3_\ Basic\ Strategy.mp4
 
 
 
