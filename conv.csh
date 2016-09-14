@@ -2,36 +2,59 @@
 #
 # Convert movie files to format that can be read on my old 3rd Gen iPod Nano
 #
+# Clay Budin
+# clay_budin@hotmail.com
+# Jul-Sep 2016
+#
+# NOTES:
+#	To use this, first use iTunes to download the videos to be watched
+#	Move the videos from /Users/clay_budin/Music/iTunes/iTunes Media/iTunes U/<Course>
+#	  to here (/Users/clay_budin/work/Personal/iTunes)
+#	Best to work on movies from one course at a time, for naming and possible indexing
+#	Set parameters for this script, mostly courseName and optional indexing
+#	If using indexing, need to manually order files for processing (see examples below)
+#	Check movie type and audio codec with ffmpeg -i <movie> on one of the movie files
+#		video should be h264 and audio aac - most are, if not may need to adjust vars below
+#	Run this script ./conv.csh
+#	This script will delete the original movies after it converts them if doDeleteOrig is 1
+#	Load the converted movies (with IPOD) onto iPod into Movies area (not iTunes)
+#	Delete both original and converted movie files from here
+#	Delete videos from list in iTunes
 #
 # TO DO:
-#	+Detect resolution and aspect ratio of video automatically
+#	+Detect resolution and aspect ratio of video automatically - letterboxing
 #	Detect video type automatically
 #	Add course name automatically - shorten somehow
 #
 
-set courseName = Death
-set indexStart = -1
+set courseName = EvoMed				# set title of course to group videos together
+set indexStart = -1					# if > 0 then add a starting index to names - need to order file seq
+
+# file list - if using index then need to set order to match
 #set files = (*)
 set files = (*.mov *.m4v *.mp4)
 #set files = ("Hemingway's In Our Time.m4v")
 #set files = (*Ring* *Parts* *Well* *PTSD* *Virtue*)
 #set files = (02*)
 
-set sleepSecs = 15
-set doLetterbox = 0
-set videoType = h264
-#set audioCodec = copy				# usual audio codec - copy input
-set audioCodec = libvo_aacenc		# for one set of courses that used weird audio format - convert to AAC
-set fcount = 0
+set sleepSecs = 15					# how long to wait between processing movies - let the CPU cool down
+set videoType = h264				# check movie type with ffmpeg -i Every iTunes video so far has been h264
+set audioCodec = copy				# usual audio codec - copy input
+#set audioCodec = libvo_aacenc		# for some courses that used weird audio format - convert to AAC
+set doDeleteOrig = 0
 
 set i = 1
+set fcount = 0
 while ($i <= $#files)
 	set f = "$files[$i]"
 	@ i = $i + 1
 
+	# skip already processed movies
 	#if ("$f" !~ "L*") continue
 	#if ("$f" == "_NOTES*" || "$f" == "conv.csh" || "$f" =~ "*IPOD*" || "$f" == "tmp" || "$f" =~ "meta*") continue
 	if ("$f" =~ "*IPOD*") continue
+
+	set doLetterbox = 0					# Now done automatically - check movie with ffmpeg -i and if 16:9 set this to 1, if 4:3 set to 0
 
 	# add indexing - some sets of movies don't have starting index numbers
 	set idx = ""
@@ -71,6 +94,7 @@ while ($i <= $#files)
 	set asp = `echo "scale = 2 ; $res[1] / $res[2]" | bc -l`
 	if ("$asp" == "1.77") then
 		set doLetterbox = 1
+		echo "Letterboxing"
 	else if ("$asp" != "1.33") then
 		echo "Strange video aspect ratio: $asp"
 		continue
@@ -85,7 +109,7 @@ while ($i <= $#files)
 		ffmpeg -hide_banner -v warning -i "$f" -i meta2.txt -map_metadata 1 -map $vs -map 0:a -sn -acodec $audioCodec -codec:v mpeg4 -filter:v "scale=320:240" -y "$outName"
 	endif
 
-	rm "$f"
+	if ($doDeleteOrig) rm "$f"
 	rm meta.txt meta2.txt
 	@ fcount = $fcount + 1
 
