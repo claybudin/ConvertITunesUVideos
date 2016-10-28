@@ -24,11 +24,12 @@
 # TO DO:
 #	+Detect resolution and aspect ratio of video automatically - letterboxing
 #	Detect video type automatically
+#	Detect audio type and automatically switch between copy and libva_aacenc
 #	Add course name automatically - shorten somehow
 #
 
 set courseName = EvoMed				# set title of course to group videos together
-set indexStart = -1					# if > 0 then add a starting index to names - need to order file seq
+set indexStart = -1					# if > 0 then add a starting index to names - need to order file sequence in loop below
 
 # file list - if using index then need to set order to match
 #set files = (*)
@@ -41,7 +42,7 @@ set sleepSecs = 15					# how long to wait between processing movies - let the CP
 set videoType = h264				# check movie type with ffmpeg -i Every iTunes video so far has been h264
 set audioCodec = copy				# usual audio codec - copy input
 #set audioCodec = libvo_aacenc		# for some courses that used weird audio format - convert to AAC
-set doDeleteOrig = 0
+set doDeleteOrig = 1
 
 set i = 1
 set fcount = 0
