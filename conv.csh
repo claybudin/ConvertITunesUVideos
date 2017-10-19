@@ -5,6 +5,7 @@
 # Clay Budin
 # clay_budin@hotmail.com
 # Jul-Sep 2016
+# Rev: Oct 2017
 #
 # NOTES:
 #	To use this, first use iTunes to download the videos to be watched
@@ -14,9 +15,10 @@
 #	Set parameters for this script, mostly courseName and optional indexing
 #	If using indexing, need to manually order files for processing (see examples below)
 #		can also number files themselves so they are in order
-#	Check movie type and audio codec with ffmpeg -i <movie> on one of the movie files
+#	OLD: Check movie type and audio codec with ffmpeg -i <movie> on one of the movie files
 #		video should be h264 and audio aac - most are, if not may need to adjust vars below
 #		audio check now done automatically
+#		video always h264 - moved param setting down
 #	Run this script ./conv.csh
 #	This script will delete the original movies after it converts them if doDeleteOrig is 1
 #	Load the converted movies (with IPOD) onto iPod into Movies area (not iTunes)
@@ -25,12 +27,12 @@
 #
 # TO DO:
 #	+Detect resolution and aspect ratio of video automatically - letterboxing
-#	Detect video type automatically
-#	Detect audio type and automatically switch between copy and libva_aacenc
+#	-Detect video type automatically
+#	+Detect audio type and automatically switch between copy and libva_aacenc
 #	Add course name automatically - shorten somehow
 #
 
-set courseName = MoralPol				# set title of course to group videos together
+set courseName = PhilBrain				# set title of course to group videos together	 CivWar PhilBrain QuantPhys
 set indexStart = -1					# if > 0 then add a starting index to names - need to order file sequence in loop below
 
 # file list - if using index then need to set order to match index order
@@ -41,8 +43,7 @@ set files = (*.mov *.m4v *.mp4)
 #set files = (02*)
 
 
-set sleepSecs = 300					# how long to wait between processing movies - let the CPU cool down
-set videoType = h264				# check movie type with ffmpeg -i Every iTunes video so far has been h264
+set sleepSecs = 120 #300					# how long to wait between processing movies - let the CPU cool down
 set doDeleteOrig = 0				# 1 == delete original movie files, 0 == don't
 
 
@@ -51,18 +52,28 @@ set doDeleteOrig = 0				# 1 == delete original movie files, 0 == don't
 
 
 
+
+
+# this is needed because sometimes there is more than one video stream - h264 and mjpeg for example
+set videoType = h264				# check movie type with ffmpeg -i Every iTunes video so far has been h264
+
 set echo_style = "both"				# allow escape sequences (color) in echo
 
 set i = 1
+set nFiles = $#files
 set fcount = 0
 while ($i <= $#files)
 	set f = "$files[$i]"
 	@ i = $i + 1
 
 	# skip already processed movies
+	# should count these first - avoid sleep after last movie that requires processing
 	#if ("$f" !~ "L*") continue
 	#if ("$f" == "_NOTES*" || "$f" == "conv.csh" || "$f" =~ "*IPOD*" || "$f" == "tmp" || "$f" =~ "meta*") continue
-	if ("$f" =~ "*IPOD*") continue
+	if ("$f" =~ "*IPOD*") then
+		@ nFiles = $nFiles - 1		# don't count already processed files
+		continue
+	endif
 
 	set doLetterbox = 0					# Now done automatically - check movie with ffmpeg -i and if 16:9 set this to 1, if 4:3 set to 0
 
@@ -143,7 +154,9 @@ while ($i <= $#files)
 end
 
 echo ""
-echo "***** Done: $#files files specified, $fcount files processed"
+echo ""
+echo "\e[1;36m***** Done: $nFiles files specified, $fcount files processed *****\e[0m"
+echo ""
 
 
 
