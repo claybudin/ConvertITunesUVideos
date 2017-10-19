@@ -13,8 +13,10 @@
 #	Best to work on movies from one course at a time, for naming and possible indexing
 #	Set parameters for this script, mostly courseName and optional indexing
 #	If using indexing, need to manually order files for processing (see examples below)
+#		can also number files themselves so they are in order
 #	Check movie type and audio codec with ffmpeg -i <movie> on one of the movie files
 #		video should be h264 and audio aac - most are, if not may need to adjust vars below
+#		audio check now done automatically
 #	Run this script ./conv.csh
 #	This script will delete the original movies after it converts them if doDeleteOrig is 1
 #	Load the converted movies (with IPOD) onto iPod into Movies area (not iTunes)
@@ -28,21 +30,28 @@
 #	Add course name automatically - shorten somehow
 #
 
-set courseName = EvoMed				# set title of course to group videos together
+set courseName = MoralPol				# set title of course to group videos together
 set indexStart = -1					# if > 0 then add a starting index to names - need to order file sequence in loop below
 
-# file list - if using index then need to set order to match
+# file list - if using index then need to set order to match index order
 #set files = (*)
 set files = (*.mov *.m4v *.mp4)
 #set files = ("Hemingway's In Our Time.m4v")
 #set files = (*Ring* *Parts* *Well* *PTSD* *Virtue*)
 #set files = (02*)
 
-set sleepSecs = 15					# how long to wait between processing movies - let the CPU cool down
+
+set sleepSecs = 300					# how long to wait between processing movies - let the CPU cool down
 set videoType = h264				# check movie type with ffmpeg -i Every iTunes video so far has been h264
-set audioCodec = copy				# usual audio codec - copy input
-#set audioCodec = libvo_aacenc		# for some courses that used weird audio format - convert to AAC
-set doDeleteOrig = 1
+set doDeleteOrig = 0				# 1 == delete original movie files, 0 == don't
+
+
+
+
+
+
+
+set echo_style = "both"				# allow escape sequences (color) in echo
 
 set i = 1
 set fcount = 0
@@ -83,22 +92,35 @@ while ($i <= $#files)
 	#set vs = 0
 	set vs = `ffmpeg -hide_banner -i "$f" |& grep -o "Stream #.*$videoType" | grep -o '0:\d\+'`
 	if ("$vs" == "") then 
-		echo "ERROR: Could not locate video stream!"
+		echo "\e[5;41;1;37m********** ERROR: Could not locate video stream!\e[0m"
 	endif
 
 	# get resolution of video, aspect ratio and whether to letterbox or not
 	set res = `ffmpeg -hide_banner -i "$f" |& grep "Stream #.*$videoType" | grep -o '\d\{3,\}x\d\+' | sed 's/x/ /'`
 	if ("$res" == "") then
-		echo "Could not determine video resolution!"
+		echo "\e[5;41;1;37m********** ERROR: Could not determine video resolution!\e[0m"
 		continue
 	endif
 	set asp = `echo "scale = 2 ; $res[1] / $res[2]" | bc -l`
 	if ("$asp" == "1.77") then
+		echo "Do Letterboxing"
 		set doLetterbox = 1
-		echo "Letterboxing"
 	else if ("$asp" != "1.33") then
-		echo "Strange video aspect ratio: $asp"
+		echo "\e[5;41;1;37m********** ERROR: Strange video aspect ratio: $asp\e[0m"
 		continue
+	endif
+
+	# determine audio type automatically
+	if (`ffmpeg -hide_banner -i "$f" |& grep "Stream #.*Audio:" | wc -l` != 1) then
+		echo "\e[5;41;1;37m********** ERROR: Could not determine audio type!\e[0m"
+		continue
+	endif
+
+	set audioCodec = copy				# usual audio codec - copy input - use when audio is already ACC (check w/ ffmpeg -i on movie)
+	#set audioCodec = libvo_aacenc		# for some courses that used weird audio format - convert to AAC
+	if (`ffmpeg -hide_banner -i "$f" |& grep "Stream #.*Audio:" | grep aac | wc -l` != 1) then
+		echo "Convert audio to AAC"
+		set audioCodec = libvo_aacenc
 	endif
 
 	# use of -map strips out subtitles and still image(s)
@@ -114,11 +136,14 @@ while ($i <= $#files)
 	rm meta.txt meta2.txt
 	@ fcount = $fcount + 1
 
-	if ($i <= $#files) sleep $sleepSecs
+	if ($i <= $#files) then
+		echo "sleep $sleepSecs"
+		sleep $sleepSecs
+	endif
 end
 
 echo ""
-echo "Done: $#files files specified, $fcount files processed"
+echo "***** Done: $#files files specified, $fcount files processed"
 
 
 
