@@ -50,6 +50,25 @@ ffmpeg -i ~/work/Personal/iTunes/Lecture\ 3_\ Basic\ Strategy.mp4 -vcodec mpeg4 
 
 
 
+Courses Watched (Many from memory, some probably forgotten)
+
+Yale
+Financial Markets 2011 - Robert Shiller
+Philosophy and Science of Human Nature - Tamar Gendler
+The Civil War and Reconstruction Era 1845-1877 - David Blight
+Evolution, Ecology and Behavior - Stephen C. Stearns
+Death - Shelly Kagan
+Political Philosophy - Steven B. Smith
+Game Theory - Ben Polak
+The Moral Foundations of Politics - Ian Shapiro
+The American Revolution - Joanne B. Freeman
+Foundations of Modern Social Theory - Ivan Szelenyi
+
+MIT
+
+Stanford
+
+Other
 
 
 

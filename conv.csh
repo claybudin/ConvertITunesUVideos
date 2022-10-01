@@ -11,6 +11,7 @@
 #	To use this, first use iTunes to download the videos to be watched
 #	Move the videos from /Users/clay_budin/Music/iTunes/iTunes Media/iTunes U/<Course>
 #	  to here (/Users/clay_budin/work/Personal/iTunes)
+#		Also: Users/clay_budin/Music/iTunes/iTunes Media/Podcasts
 #	Best to work on movies from one course at a time, for naming and possible indexing
 #	Set parameters for this script, mostly courseName and optional indexing
 #	If using indexing, need to manually order files for processing (see examples below)
@@ -32,8 +33,8 @@
 #	Add course name automatically - shorten somehow
 #
 
-set courseName = PhilBrain				# set title of course to group videos together	 CivWar PhilBrain QuantPhys
-set indexStart = -1					# if > 0 then add a starting index to names - need to order file sequence in loop below
+set courseName = Entropy				# set title of course to group videos together - CompThink PhilBrain HoldEm Matrix Entropy
+set indexStart = 11						# if > 0 then add a starting index to names - need to order file sequence in loop below
 
 # file list - if using index then need to set order to match index order
 #set files = (*)
@@ -43,8 +44,8 @@ set files = (*.mov *.m4v *.mp4)
 #set files = (02*)
 
 
-set sleepSecs = 120 #300					# how long to wait between processing movies - let the CPU cool down
-set doDeleteOrig = 0				# 1 == delete original movie files, 0 == don't
+set sleepSecs = 30 #60 #120 #300			# how long to wait between processing movies - let the CPU cool down
+set doDeleteOrig = 0					# 1 == delete original movie files, 0 == don't
 
 
 
